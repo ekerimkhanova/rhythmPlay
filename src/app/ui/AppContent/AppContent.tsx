@@ -1,60 +1,53 @@
-import React, { useEffect, useRef, useState } from "react";
-import cn from "./AppContent.module.scss";
-import axios from "axios";
+import { useEffect, useRef } from "react";
+import { useAppContext } from "../../../shared/ui/AppContext/AppContext.ui";
+import { _drawBuffer } from "../../../shared/lib/utils/utils";
+import { useEvents } from "../../../shared/lib/hook/useEvents";
+
+// add context with params: audioBuffer, updateAudioBuffer, audio, audioContext
 
 // url: string | HTMLMediaElement
-export const AppContent = ({ audioSrc }: { audioSrc: string }) => {
-  const canvasRef = useRef<HTMLDivElement>(null);
+export const AppContent = () => {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const { audio, audioBuffer } = useAppContext();
 
-  const [buffer, setBuffer] = useState<AudioBuffer>();
-
-  const audio = new Audio(audioSrc);
-
-  async function visualizeAudio() {
-    const context = new AudioContext();
-    const audio = new Audio(audioSrc);
-    const analyser = context.createAnalyser();
-
-    const response = await axios.get(audioSrc, { responseType: "arraybuffer" });
-
-    const audioBuffer = await context.decodeAudioData(response.data); // create audio source
-    const source = context.createBufferSource();
-    source.buffer = audioBuffer;
-    // source.start();
-
-    // const source = context.createMediaElementSource(audio);
-
-    console.log(audioBuffer);
-
-    source.connect(analyser);
-    analyser.connect(context.destination);
-
-    const frequencyArray = new Uint8Array(analyser.frequencyBinCount);
-    const sampleRate = context.sampleRate;
-
-    // audio.onloadedmetadata = function () {
-    //   const audioBuffer = context.createBuffer(2, audio.duration * sampleRate, sampleRate);
-    //   buffer = audioBuffer;
-    // };
-    // const audioBuffer = context.createBuffer(2, audio.duration * sampleRate, sampleRate);
-
-    // console.log(buffer);
-
-    // audio.loop = true;
-
-    //   startAnimation();
-  }
+  const {
+    onTimeUpdate,
+    playAudio,
+    pauseAudio,
+    toggleAudio,
+    rewindToBeginning,
+    rewind,
+  } = useEvents(canvas);
 
   useEffect(() => {
-    if (canvasRef.current) {
-      visualizeAudio();
+    if (canvas.current && audioBuffer) {
+      _drawBuffer(canvas, canvas.current.width, audioBuffer.getChannelData(0));
     }
-  }, []);
+  }, [canvas.current, audioBuffer]);
+
+  useEffect(() => {
+    audio.addEventListener("timeupdate", onTimeUpdate);
+
+    return () => {
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+    };
+  });
+
+  // const eventEmitter = useEventEmitter();
+  // const onBuyClick = () => {
+  //   eventEmitter.emit("eventName", { total });
+  // };
+
+  // useEvent("eventName", (data) => {
+  //   showTotal(data.total);
+  // });
 
   return (
     <div>
-      <button onClick={() => audio.play()}>play</button>
-      <div className={cn.canvas} ref={canvasRef} />
+      <button onClick={playAudio}>play</button>
+      <button onClick={pauseAudio}>pause</button>
+      <button onClick={toggleAudio}>toggle</button>
+      <canvas width="750" height="200" ref={canvas} />
     </div>
   );
 };

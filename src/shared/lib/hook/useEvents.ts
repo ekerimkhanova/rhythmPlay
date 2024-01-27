@@ -4,17 +4,56 @@ import { _drawBuffer } from "../utils/utils";
 export function useEvents(canvas: React.MutableRefObject<HTMLCanvasElement>) {
   const { audio, audioBuffer } = useAppContext();
 
+  function getChannelData(currentTime) {
+    return new Float32Array(Math.round(audioBuffer.sampleRate * currentTime));
+  }
+
   function onTimeUpdate() {
     const currentCanvasWidth =
       (canvas.current.width * audio.currentTime) / audio.duration;
+    const chanelData = getChannelData(audio.currentTime);
+    audioBuffer.copyFromChannel(chanelData, 0, 0);
+    _drawBuffer({
+      canvas,
+      width: currentCanvasWidth,
+      chanelData,
+      color: "000",
+    });
+  }
 
-    const channelData = new Float32Array(
-      Math.round(audioBuffer.sampleRate * audio.currentTime)
+  function updateAudioRewind(e) {
+    // canvasContext.clearRect(0, 0, canvas.current.width, canvas.current.height);
+
+    // _fillInitialColor(canvas.current.width, canvasContext, "000");
+    // canvasContext.restore();
+
+    // canvasContext.strokeStyle = "blue";
+    // canvasContext.strokeRect(10, 10, 100, 100);
+    // canvasContext.fillStyle = "black";
+    _drawBuffer({
+      canvas,
+      width: canvas.current.width,
+      chanelData: audioBuffer.getChannelData(0),
+      color: "black",
+    });
+    // console.log(canvasContext);
+
+    const currentCanvasWidth = e.offsetX;
+    const currentTime = Math.ceil(
+      (audio.duration * currentCanvasWidth) / canvas.current.width
     );
 
-    audioBuffer.copyFromChannel(channelData, 0, 0);
+    audio.currentTime = currentTime;
+    const chanelData = getChannelData(currentTime);
 
-    _drawBuffer(canvas, currentCanvasWidth, channelData, "green");
+    audioBuffer.copyFromChannel(chanelData, 0, 0);
+
+    _drawBuffer({
+      canvas,
+      width: currentCanvasWidth,
+      chanelData,
+      color: "green",
+    });
   }
 
   function playAudio() {
@@ -47,5 +86,6 @@ export function useEvents(canvas: React.MutableRefObject<HTMLCanvasElement>) {
     rewindToBeginning: () => rewind(0),
     rewind,
     toggleAudio,
+    updateAudioRewind,
   };
 }

@@ -1,11 +1,17 @@
-export function _drawBuffer(
-  canvas: React.MutableRefObject<HTMLCanvasElement>,
-  width: number,
-  chanelData: Float32Array,
-  color = "000"
-) {
-  const height = canvas.current.height; // высота canvas
+export function _drawBuffer({
+  canvas,
+  width,
+  chanelData,
+  color = "black",
+}: {
+  canvas: React.MutableRefObject<HTMLCanvasElement>;
+  width: number;
+  chanelData: Float32Array;
+  color: string;
+}) {
   const canvasContext = canvas.current.getContext("2d"); // контекст canvas
+  const height = canvas.current.height; // высота canvas
+  canvasContext.clearRect(0, 0, width, height);
   const step = Math.ceil(chanelData.length / width); // 46599           // buffer.getChannelData(0) - возвращается Float32Array. Каждые 32 бита это 1 sample (маленький закодированный кусок аудио). В скобках 0 это моноканал, т е в каждом наушнике будет одинаковый звук
   const amp = height / 2; // амплитуда звуковой волны
 
@@ -22,6 +28,7 @@ export function _drawBuffer(
         max = datum;
       }
     }
+
     canvasContext.fillStyle = color;
     canvasContext.fillRect(
       i, // отступ по оси х

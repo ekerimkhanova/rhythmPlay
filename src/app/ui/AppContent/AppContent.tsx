@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useAppContext } from "../../../shared/ui/AppContext/AppContext.ui";
 import { _drawBuffer } from "../../../shared/lib/utils/utils";
 import { useEvents } from "../../../shared/lib/hook/useEvents";
@@ -8,6 +8,7 @@ import { useEvents } from "../../../shared/lib/hook/useEvents";
 // url: string | HTMLMediaElement
 export const AppContent = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
+
   const { audio, audioBuffer } = useAppContext();
 
   const {
@@ -17,11 +18,17 @@ export const AppContent = () => {
     toggleAudio,
     rewindToBeginning,
     rewind,
+    updateAudioRewind,
   } = useEvents(canvas);
 
   useEffect(() => {
     if (canvas.current && audioBuffer) {
-      _drawBuffer(canvas, canvas.current.width, audioBuffer.getChannelData(0));
+      _drawBuffer({
+        canvas,
+        width: canvas.current.width,
+        chanelData: audioBuffer.getChannelData(0),
+        color: "000",
+      });
     }
   }, [canvas.current, audioBuffer]);
 
@@ -30,6 +37,14 @@ export const AppContent = () => {
 
     return () => {
       audio.removeEventListener("timeupdate", onTimeUpdate);
+    };
+  });
+
+  useEffect(() => {
+    canvas.current.addEventListener("click", updateAudioRewind);
+
+    return () => {
+      canvas.current.removeEventListener("click", updateAudioRewind);
     };
   });
 

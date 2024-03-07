@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAppContext } from "../../../shared/ui/AppContext/AppContext.ui";
 import { _drawBuffer } from "../../../shared/lib/utils/utils";
 import { useEvents } from "../../../shared/lib/hook/useEvents";
@@ -25,7 +25,7 @@ export const AppContent = () => {
     if (canvas.current && audioBuffer) {
       _drawBuffer({
         canvas,
-        width: canvas.current.width,
+        width: 750,
         chanelData: audioBuffer.getChannelData(0),
         color: "000",
       });
@@ -40,13 +40,13 @@ export const AppContent = () => {
     };
   });
 
-  useEffect(() => {
-    canvas.current.addEventListener("click", updateAudioRewind);
+  // useEffect(() => {
+  //   canvas.current.addEventListener("click", updateAudioRewind);
 
-    return () => {
-      canvas.current.removeEventListener("click", updateAudioRewind);
-    };
-  });
+  //   return () => {
+  //     canvas.current.removeEventListener("click", updateAudioRewind);
+  //   };
+  // });
 
   // const eventEmitter = useEventEmitter();
   // const onBuyClick = () => {

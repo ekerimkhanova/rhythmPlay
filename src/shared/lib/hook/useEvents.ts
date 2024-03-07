@@ -9,51 +9,83 @@ export function useEvents(canvas: React.MutableRefObject<HTMLCanvasElement>) {
   }
 
   function onTimeUpdate() {
+    // посмотреть в сторону canvas background color
+
     const currentCanvasWidth =
       (canvas.current.width * audio.currentTime) / audio.duration;
-    const chanelData = getChannelData(audio.currentTime);
-    audioBuffer.copyFromChannel(chanelData, 0, 0);
-    _drawBuffer({
-      canvas,
-      width: currentCanvasWidth,
-      chanelData,
-      color: "000",
-    });
+
+    if (currentCanvasWidth <= 1) return;
+
+    const ctx = canvas.current.getContext("2d");
+
+    ctx.fillStyle = "red";
+    ctx.fillRect(0, 0, currentCanvasWidth, canvas.current.height);
+    // ============================================
+
+    // const ctx = canvas.current.getContext("2d");
+
+    // const imageData = ctx.getImageData(
+    //   0,
+    //   0,
+    //   currentCanvasWidth,
+    //   canvas.current.height
+    // );
+    // const data = imageData.data;
+    // console.log(data);
+    // for (let i = 0; i < data.length; i += 4) {
+
+    //   data[i] = 255; // red
+    //   data[i + 1] = 0; // green
+    //   data[i + 2] = 0; // blue
+    // }
+    // ctx.putImageData(imageData, 0, 0);
+
+    // ============================================
+
+    // canvasContext.clearRect(0, 0, currentCanvasWidth, canvas.current.height);
+    // console.log(canvasContext);
+
+    // canvasContext.beginPath();
+    // canvasContext.moveTo(canvas.current.height, currentCanvasWidth);
+    // canvasContext.quadraticCurveTo(150, 20, 250, 30);
+    // canvasContext.fillStyle = "green";
+    // canvasContext.fillRect(0, 0, currentCanvasWidth, canvas.current.height);
+    // canvasContext.fill();
+
+    // ====================================
+    // const currentCanvasWidth =
+    // (canvas.current.width * audio.currentTime) / audio.duration;
+    // const chanelData = getChannelData(audio.currentTime);
+    // audioBuffer.copyFromChannel(chanelData, 0, 0);
+
+    // _drawBuffer({
+    //   canvas,
+    //   width: currentCanvasWidth,
+    //   chanelData,
+    //   color: "green",
+    // });
   }
 
   function updateAudioRewind(e) {
-    // canvasContext.clearRect(0, 0, canvas.current.width, canvas.current.height);
-
-    // _fillInitialColor(canvas.current.width, canvasContext, "000");
-    // canvasContext.restore();
-
-    // canvasContext.strokeStyle = "blue";
-    // canvasContext.strokeRect(10, 10, 100, 100);
-    // canvasContext.fillStyle = "black";
-    _drawBuffer({
-      canvas,
-      width: canvas.current.width,
-      chanelData: audioBuffer.getChannelData(0),
-      color: "black",
-    });
-    // console.log(canvasContext);
-
-    const currentCanvasWidth = e.offsetX;
-    const currentTime = Math.ceil(
-      (audio.duration * currentCanvasWidth) / canvas.current.width
-    );
-
-    audio.currentTime = currentTime;
-    const chanelData = getChannelData(currentTime);
-
-    audioBuffer.copyFromChannel(chanelData, 0, 0);
-
-    _drawBuffer({
-      canvas,
-      width: currentCanvasWidth,
-      chanelData,
-      color: "green",
-    });
+    // _drawBuffer({
+    //   canvas,
+    //   width: canvas.current.width,
+    //   chanelData: audioBuffer.getChannelData(0),
+    //   color: "black",
+    // });
+    // const currentCanvasWidth = e.offsetX;
+    // const currentTime = Math.round(
+    //   (audio.duration * currentCanvasWidth) / canvas.current.width
+    // );
+    // audio.currentTime = currentTime;
+    // const chanelData = getChannelData(currentTime);
+    // audioBuffer.copyFromChannel(chanelData, 0, 0);
+    // _drawBuffer({
+    //   canvas,
+    //   width: currentCanvasWidth,
+    //   chanelData,
+    //   color: "green",
+    // });
   }
 
   function playAudio() {

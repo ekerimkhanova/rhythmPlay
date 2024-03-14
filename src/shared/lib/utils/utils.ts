@@ -46,9 +46,9 @@ export function _drawBuffer({
 
   const canvasVirtual = document.createElement("canvas");
   const canvasVirtualContext = canvasVirtual.getContext("2d"); // контекст canvas
-  canvasVirtual.height = canvas.current.height;
+  let height = canvasVirtual.height; // высота canvas
+  height = canvas.current.height;
   canvasVirtual.width = width;
-  const height = canvasVirtual.height; // высота canvas
   const step = Math.ceil(chanelData.length / width); // 46599           // buffer.getChannelData(0) - возвращается Float32Array. Каждые 32 бита это 1 sample (маленький закодированный кусок аудио). В скобках 0 это моноканал, т е в каждом наушнике будет одинаковый звук
   const amp = height / 2; // амплитуда звуковой волны
 
@@ -85,14 +85,6 @@ export function _drawBuffer({
     ctx.globalCompositeOperation = "source-atop";
     img.style.display = "none";
   };
-
-  // const imageData = ctx.getImageData(
-  //   0,
-  //   0,
-  //   canvas.current.width,
-  //   canvas.current.height
-  // );
-  // ctx.putImageData(imageData, 0, 0);
 
   // for (let i = 0; i < width; i++) {
   //   const datum = chanelData[i * step];

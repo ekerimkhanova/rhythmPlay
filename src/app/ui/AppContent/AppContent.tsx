@@ -3,8 +3,6 @@ import { useAppContext } from "../../../shared/ui/AppContext/AppContext.ui";
 import { _drawBuffer } from "../../../shared/lib/utils/utils";
 import { useEvents } from "../../../shared/lib/hook/useEvents";
 
-// add context with params: audioBuffer, updateAudioBuffer, audio, audioContext
-
 // url: string | HTMLMediaElement
 export const AppContent = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -40,22 +38,13 @@ export const AppContent = () => {
     };
   });
 
-  // useEffect(() => {
-  //   canvas.current.addEventListener("click", updateAudioRewind);
+  useEffect(() => {
+    canvas.current.addEventListener("click", updateAudioRewind);
 
-  //   return () => {
-  //     canvas.current.removeEventListener("click", updateAudioRewind);
-  //   };
-  // });
-
-  // const eventEmitter = useEventEmitter();
-  // const onBuyClick = () => {
-  //   eventEmitter.emit("eventName", { total });
-  // };
-
-  // useEvent("eventName", (data) => {
-  //   showTotal(data.total);
-  // });
+    return () => {
+      canvas.current.removeEventListener("click", updateAudioRewind);
+    };
+  });
 
   return (
     <div>
